@@ -50,57 +50,47 @@ int verifica_evento(evento festa[]){
     if (i==0){
         cout<<"Já foram cadastrados todos os 50 eventos!"<<endl;
         cout<<"Sinto muito :("<<endl;}}
-//void cadastra_evento(evento festa[],int i,int sis, int param1){//1º Opção
-//    spc();
-//    linhad();
-//    cout<<"                          CADASTRO DE EVENTO"<<endl;
-//    linhad();
-//    cout<<"Preencha as informações do evento:"<<endl;
-//    linha();
-//    cout<<"Identificador único: ";
-//    cin>>festa[i].id;}
 void cadastra_evento(evento festa[], int i, int sis, int param1) {
     spc();
     linhad();
-    cout << "                          CADASTRO DE EVENTO" << endl;
+    cout<<"                               CADASTRO DE EVENTOS" << endl;
     linhad();
-    cout << "Preencha as informações do evento:" << endl;
-    linha();
-    cout << "Identificador único: " << i + 1 << endl; // Incrementa o identificador único
-    festa[i].id = i + 1; // Atualiza o identificador único
-    cout << "Nome: ";
-    cin >> ws; // Ignora espaços em branco
-    getline(cin, festa[i].nome);
-    cout << "Local: ";
-    getline(cin, festa[i].local);
-    cout << "Data (formato DDMMYYYY): ";
-    cin >> festa[i].data;
-    cout << "Quantidade de ingressos colocados à venda: ";
-    cin >> festa[i].ingre;
-    cout << "Custo de organização: ";
-    cin >> festa[i].custo;
-    // Pergunta se o evento é open bar
-    cout << "O evento é open bar? 1-Sim/0-Não: ";
-    cin >> festa[i].openBar;
-    // Lógica para calcular os valores de entrada (popu, norm, espec) conforme a descrição fornecida
-    if (festa[i].openBar) {
-        festa[i].popu = festa[i].custo / festa[i].ingre + 1.75 * festa[i].drinks[0].valor;
-    } else {
-        festa[i].popu = festa[i].custo / festa[i].ingre;}
-    // Calcular valores de entrada normal e especial
-    festa[i].norm = festa[i].popu * 1.1;
-    festa[i].espec = festa[i].norm * 1.15;
-    // Exemplo de exibição das informações cadastradas
-    cout << "Evento cadastrado com sucesso!" << endl;
-    cout << "Nome: " << festa[i].nome << endl;
-    cout << "Local: " << festa[i].local << endl;
-    cout << "Data: " << festa[i].data << endl;
-    cout << "Quantidade de ingressos: " << festa[i].ingre << endl;
-    cout << "Custo de organização: " << festa[i].custo << endl;
-    cout << "Valor de entrada (Popular): " << festa[i].popu << endl;
-    cout << "Valor de entrada (Normal): " << festa[i].norm << endl;
-    cout << "Valor de entrada (Especial): " << festa[i].espec << endl;
-}
+    cout<<"Preencha as informações do eventos:"<< endl;
+    spc();
+    cout<<"Identificador único: ";
+    cin>>festa[i].id;
+    while (festa[i].id!=0){
+        cout<<"Nome: ";
+        cin>>ws;
+        getline(cin, festa[i].nome);
+        cout<<"Local: ";
+        getline(cin, festa[i].local);
+        cout<<"Data(formato DDMMYYYY): ";
+        cin>>festa[i].data;
+        cout<<"Quantidade de ingressos à venda: ";
+        cin>>festa[i].ingre;
+        cout<<"Custo de organização: ";
+        cin>>festa[i].custo;
+        cout<<"O evento é open bar? 1-Sim/0-Não: ";
+        cin>>festa[i].openBar;
+        if (festa[i].openBar){//Calcular os valores de entrada(popu, norm, espec)
+            festa[i].popu=festa[i].custo/festa[i].ingre+1.75*festa[i].drinks[0].valor;}
+        else {
+            festa[i].popu=festa[i].custo/festa[i].ingre;}
+        festa[i].norm=festa[i].popu*1.1;//Calcular valores de entrada normal e especial
+        festa[i].espec=festa[i].norm*1.15;
+        spc();
+        cout<<"                          EVENTO CADASTRADO COM SUCESSO"<<endl;
+        linha();
+        cout<<"Iniciando cadastro do próximo evento..."<<endl;
+        spc();
+        cout<<"Identificador único: ";
+        cin>>festa[i].id;}
+    spc();
+    cout<<"Fim de execução! Tecle 'Enter' para retornar ao Menu...";
+    getchar();
+    getchar();
+    clstel(sis,param1);}
 int main(){
     setlocale(LC_ALL,"Portuguese");
     int param1=2,opcao,sis,i,opc;
