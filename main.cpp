@@ -6,12 +6,9 @@ using namespace std;
 void linha();
 void linhad();
 void spc();
-void clstel(int sis,int& param1){//Limpa a tela
-    if (param1==2){
-        if (sis==1){
-        system("cls");}
-        else if (sis==2){
-            system("clear");}}}
+int verifica_evento(evento festa[]);
+evento *identifica_evento(evento festa[],int ident);
+void clstel(int sis,int& param1);
 void config(int sis,int& param1){//Menu Parâmetros do Sistema
     spc();
     linhad();
@@ -23,7 +20,6 @@ void config(int sis,int& param1){//Menu Parâmetros do Sistema
     cin>>param1;
     clstel(sis,param1);}
 void menu(){//Menu de opções
-    spc();
     linhad();
     cout<<"                        Trabalho de Conclusão de Disciplina"<<endl;
     cout<<"                         Algoritmos e Estruturas de Dados"<<endl;
@@ -33,25 +29,17 @@ void menu(){//Menu de opções
     linhad();
     cout<<"Escolha de 1 a 7 a opção desejada:"<<endl;
     spc();
-    cout<<" 1- Cadastrar um evento"<<endl;
-    cout<<" 2- Pesquisar um evento"<<endl;
+    cout<<" 1- Cadastrar evento"<<endl;
+    cout<<" 2- Pesquisar evento"<<endl;
     cout<<" 3- Ingressos vendidos"<<endl;
     cout<<" 4- Exibir resultado por evento"<<endl;
     cout<<" 5- Exibir resultado geral"<<endl;
     cout<<" 6- Configurações"<<endl;
     cout<<" 7- Sair"<<endl;
+    spc();
     linha();
     spc();
     cout<<"Informe a opção desejada: ";}
-int verifica_evento(evento festa[]){
-    int i;
-    for(i=0; i<QTDEVT; i++){
-        if(festa[i].id==0)
-        return i;}
-    if (i==0){
-        cout<<"Já foram cadastrados todos os 50 eventos!"<<endl;
-        cout<<"Sinto muito :("<<endl;
-        return -1;}}
 void cadastra_evento(evento festa[], int i, int sis, int param1){//1° Opção
     spc();
     linhad();
@@ -88,7 +76,7 @@ void cadastra_evento(evento festa[], int i, int sis, int param1){//1° Opção
                 festa[i].popu+=1.75*festa[i].drinks[j].valor;}}
         else {
             festa[i].popu = festa[i].custo / festa[i].ingre;}
-        festa[i].norm=festa[i].popu*1.1;//Calcula os valores de entrada normal e especial
+        festa[i].norm=festa[i].popu*1.1;
         festa[i].espec=festa[i].norm*1.15;
         spc();
         cout<<"                          EVENTO CADASTRADO COM SUCESSO"<<endl;
@@ -106,14 +94,7 @@ void cadastra_evento(evento festa[], int i, int sis, int param1){//1° Opção
     getchar();
     getchar();
     clstel(sis,param1);}
-evento *identifica_evento(evento festa[],int ident){
-    for(int i=0; i<50; i++){
-        if (festa[i].id==ident){
-            cout<<"Evento encontrado!"<<endl;
-            spc();
-            return &festa[i];}}
-    return nullptr;}
-void pesquisa_evento(evento festa[], int sis, int param1){
+void pesquisa_evento(evento festa[], int sis, int param1){//2º Opção
     int ident;
     spc();
     linhad();
@@ -135,10 +116,8 @@ void pesquisa_evento(evento festa[], int sis, int param1){
             cout<<"    Bebida "<<j+1<<": "<<indice->drinks[j].nome<<endl;
             cout<<"    Teor alcoólico: "<<indice->drinks[j].teor<<endl;
             cout<<"    Valor: "<<indice->drinks[j].valor<<endl;}}
-        else{
-            cout<<"  Evento não é Open Bar!"<<endl;}}
-    else{
-        cout<<"Evento não encontrado na base de dados!"<<endl;}
+        else{ cout<<"  Evento não é Open Bar!"<<endl;}}
+    else{ cout<<"Evento não encontrado na base de dados!"<<endl;}
     spc();
     linha();
     spc();
@@ -146,6 +125,100 @@ void pesquisa_evento(evento festa[], int sis, int param1){
     getchar();
     getchar();
     clstel(sis,param1);}
+void venda_ingressos(evento festa[], int sis, int param1){//3º Opção
+    int ident,qtdePopular,qtdeNormal,qtdeEspecial;
+    spc();
+    linhad();
+    cout<<"                                  VENDA DE INGRESSOS" << endl;
+    linhad();
+    cout<<"Informe o identificador do evento desejado:" << endl;
+    spc();
+    cout<<"Identificador único: ";
+    cin>>ident;
+    evento *eventoSelecionado=identifica_evento(festa, ident);
+    if (eventoSelecionado!=nullptr) {
+        cout<<"Dados do evento:"<<endl;
+        cout<<"Nome: "<<eventoSelecionado->nome<<endl;
+        cout<<"Local: "<<eventoSelecionado->local<<endl;
+        cout<<"Data: "<<eventoSelecionado->data<<endl;
+        spc();
+        cout<<"Quantidade de ingressos vendidos:"<<endl;
+        cout<<"Popular: ";
+        cin>>qtdePopular;
+        cout<<"Normal: ";
+        cin>>qtdeNormal;
+        cout<<"Especial: ";
+        cin>>qtdeEspecial;
+        eventoSelecionado->popuvend += qtdePopular;
+        eventoSelecionado->normvend += qtdeNormal;
+        eventoSelecionado->especvend += qtdeEspecial;
+        double totalArrecadado = qtdePopular*eventoSelecionado->popu +
+                                 qtdeNormal*eventoSelecionado->norm +
+                                 qtdeEspecial*eventoSelecionado->espec;
+        double lucroPrejuizo=totalArrecadado-eventoSelecionado->custo;
+        spc();
+        cout<<"Resultados da venda:"<<endl;
+        cout<<"    Total arrecadado: R$ "<<totalArrecadado<<endl;
+        cout<<"    Custo do evento: R$ "<<eventoSelecionado->custo<<endl;
+        cout<<"    Lucro/Prejuízo: R$ "<<lucroPrejuizo<<endl;}
+    else { cout<<"Evento não encontrado na base de dados!"<<endl;}
+    linha();
+    spc();
+    cout<<"Fim de execução! Tecle 'Enter' para retornar ao Menu...";
+    getchar();
+    getchar();
+    clstel(sis, param1);}
+void exibir_resultado_evento(evento festa[], int sis, int param1) {//4º Opção
+    int ident;
+    spc();
+    linhad();
+    cout<<"                                  RESULTADO POR EVENTO"<<endl;
+    linhad();
+    cout<<"Informe o identificador do evento desejado:"<<endl;
+    spc();
+    cout<<"Identificador único: ";
+    cin>>ident;
+    evento *eventoSelecionado=identifica_evento(festa,ident);
+    if (eventoSelecionado != nullptr) {
+        cout<<"Dados do evento:"<<endl;
+        cout<<"Nome: "<<eventoSelecionado->nome<<endl;
+        cout<<"Local: "<<eventoSelecionado->local<<endl;
+        cout<<"Data: "<<eventoSelecionado->data<<endl;
+        double totalArrecadado = eventoSelecionado->popuvend*eventoSelecionado->popu +
+                                 eventoSelecionado->normvend*eventoSelecionado->norm +
+                                 eventoSelecionado->especvend*eventoSelecionado->espec;
+        double lucroPrejuizo = totalArrecadado-eventoSelecionado->custo;
+        spc();
+        cout<<"Resultados:"<<endl;
+        cout<<"    Total arrecadado: R$"<<totalArrecadado<<endl;
+        cout<<"    Custo do evento: R$"<<eventoSelecionado->custo<<endl;
+        cout<<"    Lucro/Prejuízo: R$"<<lucroPrejuizo<<endl;}
+    else{ cout<<"Evento não encontrado na base de dados!"<<endl;}
+    linha();
+    spc();
+    cout << "Fim de execução! Tecle 'Enter' para retornar ao Menu...";
+    getchar();
+    getchar();
+    clstel(sis, param1);}
+void saldo_promoter(evento festa[], int sis, int param1){//5º Opção
+    spc();
+    linhad();
+    cout << "                           SALDO ATUAL DO PROMOTER" << endl;
+    linhad();
+    double saldo=0.0;
+    for (int i=0; i<QTDEVT; i++) {
+        saldo += festa[i].popuvend*festa[i].popu +
+                 festa[i].normvend*festa[i].norm +
+                 festa[i].especvend*festa[i].espec;}
+    spc();
+    cout<<"Saldo atual do promoter: R$ "<<saldo<<endl;
+    spc();
+    linha();
+    spc();
+    cout<<"Fim de execução! Tecle 'Enter' para retornar ao Menu...";
+    getchar();
+    getchar();
+    clstel(sis, param1);}
 int main(){
     setlocale(LC_ALL,"Portuguese");
     int param1=2,opcao,sis,i,opc;
@@ -159,53 +232,52 @@ int main(){
     #endif
     //==========================================
     clstel(sis,param1);
-do {
-        menu();
-        cin>>opc;
-        switch (opc){//Direcionamento de opções
-        case 1:
-            clstel(sis,param1);
-            i=verifica_evento(festa);
-            if(i!=-1){
+    do {
+            menu();
+            cin>>opc;
+            switch (opc){//Direcionamento de opções
+            case 1:
+                clstel(sis,param1);
+                i=verifica_evento(festa);
+                if(i!=-1){
+                    cout<<"Iniciando a execução...";
+                    cadastra_evento(festa,i,sis,param1);}
+                break;
+            case 2:
+                clstel(sis,param1);
                 cout<<"Iniciando a execução...";
-                cadastra_evento(festa,i,sis,param1);}
-            break;
-        case 2:
-            clstel(sis,param1);
-            pesquisa_evento(festa,sis,param1);
-            cout<<"Iniciando a execução...";
-            //atv2(sis,param1);
-            break;
-        case 3:
-            clstel(sis,param1);
-            cout<<"Iniciando a execução...";
-            //atv3(sis,param1);
-            break;
-        case 4:
-            clstel(sis,param1);
-            cout<<"Iniciando a execução...";
-            //atv4(sis,param1);
-            break;
-        case 5:
-            clstel(sis,param1);
-            cout<<"Iniciando a execução...";
-            //atv5(sis,param1);
-            break;
-        case 6:
-            clstel(sis,param1);
-            config(sis,param1);
-            break;
-        case 7:
-            spc();
-            cout<<"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"<<endl;
-            cout<<"                                 Até a próxima!"<<endl;
-            spc();
-            break;
-        default:
-            cout<<endl<<"Opção inválida! Tecle 'Enter' e selecione novamente...";
-            cin.ignore();
-            cin.ignore();
-            clstel(sis,param1);
-            break;}
-    }while (opc !=7);
+                pesquisa_evento(festa,sis,param1);
+                break;
+            case 3:
+                clstel(sis,param1);
+                cout<<"Iniciando a execução...";
+                venda_ingressos(festa,sis,param1);
+                break;
+            case 4:
+                clstel(sis,param1);
+                cout<<"Iniciando a execução...";
+                exibir_resultado_evento(festa,sis,param1);
+                break;
+            case 5:
+                clstel(sis,param1);
+                cout<<"Iniciando a execução...";
+                saldo_promoter(festa,sis,param1);
+                break;
+            case 6:
+                clstel(sis,param1);
+                config(sis,param1);
+                break;
+            case 7:
+                spc();
+                cout<<"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"<<endl;
+                cout<<"                                 Até a próxima!"<<endl;
+                spc();
+                break;
+            default:
+                cout<<endl<<"Opção inválida! Tecle 'Enter' e selecione novamente...";
+                cin.ignore();
+                cin.ignore();
+                clstel(sis,param1);
+                break;}
+        }while (opc !=7);
     return 0;}
